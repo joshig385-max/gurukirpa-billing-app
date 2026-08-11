@@ -7,7 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body class="bg-slate-900 text-slate-100 font-sans min-h-screen pb-20">
+<body class="bg-slate-900 text-slate-100 font-sans min-h-screen pb-24">
 
     <!-- Header -->
     <header class="bg-slate-800 border-b border-slate-700 p-4 sticky top-0 z-50 flex justify-between items-center shadow-md">
@@ -30,7 +30,7 @@
             <input type="text" id="machineSerial" placeholder="Machine Serial No. / Barcode" class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-xs text-white">
         </div>
 
-        <!-- TDS Water Log -->
+        <!-- Water TDS Quality Log -->
         <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 shadow-sm space-y-3">
             <h2 class="text-xs font-bold text-emerald-400 uppercase tracking-wider"><i class="fa-solid fa-droplet mr-1"></i>Water TDS Quality Log</h2>
             <div class="grid grid-cols-2 gap-3">
@@ -45,14 +45,23 @@
             </div>
         </div>
 
+        <!-- Bill Amount Input -->
+        <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 shadow-sm space-y-3">
+            <h2 class="text-xs font-bold text-emerald-400 uppercase tracking-wider"><i class="fa-solid fa-indian-rupee-sign mr-1"></i>Billing & Service Amount</h2>
+            <div>
+                <label class="text-[10px] text-slate-400">Service / Parts Total (₹)</label>
+                <input type="number" id="billAmount" value="2150" class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-sm font-bold text-emerald-400 mt-1">
+            </div>
+        </div>
+
     </main>
 
     <!-- Bottom Checkout Bar -->
-    <div class="fixed bottom-0 left-0 w-full bg-slate-900 border-t border-slate-700 p-3 shadow-lg">
+    <div class="fixed bottom-0 left-0 w-full bg-slate-900 border-t border-slate-700 p-3 shadow-lg z-50">
         <div class="max-w-3xl mx-auto flex justify-between items-center">
             <div>
                 <p class="text-[10px] text-slate-400">Grand Total (Incl. GST)</p>
-                <p class="text-base font-bold text-emerald-400">₹2,150</p>
+                <p id="displayTotal" class="text-base font-bold text-emerald-400">₹2,150</p>
             </div>
             <div class="flex gap-2">
                 <button id="saveBtn" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold px-4 py-2 rounded-lg text-xs transition">
@@ -80,12 +89,21 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
+        const amountInput = document.getElementById('billAmount');
+        const displayTotal = document.getElementById('displayTotal');
+
+        amountInput.addEventListener('input', function() {
+            let val = amountInput.value || 0;
+            displayTotal.innerText = "₹" + Number(val).toLocaleString('en-IN');
+        });
+
         document.getElementById('saveBtn').addEventListener('click', async function() {
             let name = document.getElementById('custName').value;
             let mobile = document.getElementById('custMobile').value;
             let serial = document.getElementById('machineSerial').value;
             let tdsIn = document.getElementById('tdsIn').value;
             let tdsOut = document.getElementById('tdsOut').value;
+            let finalAmount = Number(amountInput.value) || 0;
 
             if(!name || !mobile) {
                 alert("Please enter customer name and mobile number!");
@@ -99,7 +117,7 @@
                     machineSerial: serial,
                     tdsIn: tdsIn,
                     tdsOut: tdsOut,
-                    grandTotal: 2150,
+                    grandTotal: finalAmount,
                     createdAt: new Date().toISOString()
                 });
                 alert("Invoice Saved Successfully to Cloud Database!");
@@ -108,6 +126,8 @@
                 document.getElementById('machineSerial').value = '';
                 document.getElementById('tdsIn').value = '';
                 document.getElementById('tdsOut').value = '';
+                amountInput.value = '2150';
+                displayTotal.innerText = '₹2,150';
             } catch (e) {
                 console.error("Error adding document: ", e);
                 alert("Error saving invoice. Check console.");
