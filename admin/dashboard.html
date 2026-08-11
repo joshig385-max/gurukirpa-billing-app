@@ -3,61 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GuruKirpa - Technician Billing Portal</title>
+    <title>GuruKirpa - Admin Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body class="bg-slate-900 text-slate-100 font-sans min-h-screen pb-20">
+<body class="bg-slate-900 text-slate-100 font-sans min-h-screen p-4 md:p-6">
 
-    <!-- Header -->
-    <header class="bg-slate-800 border-b border-slate-700 p-4 sticky top-0 z-50 flex justify-between items-center shadow-md">
-        <div>
-            <h1 class="text-sm font-bold text-emerald-400">GURUKIRPA / TECHNICIAN PORTAL</h1>
-            <p class="text-[10px] text-slate-400">Cloud Connected</p>
-        </div>
-        <a href="../index.html" class="bg-red-500/20 text-red-400 px-3 py-1 rounded text-xs font-semibold border border-red-500/30">Logout</a>
-    </header>
-
-    <main class="max-w-3xl mx-auto p-4 space-y-4">
-        
-        <!-- Customer Details -->
-        <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 shadow-sm space-y-3">
-            <h2 class="text-xs font-bold text-emerald-400 uppercase tracking-wider"><i class="fa-solid fa-user mr-1"></i>Customer Details</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <input type="text" id="custName" placeholder="Customer Name" class="bg-slate-900 border border-slate-700 rounded p-2 text-xs text-white">
-                <input type="tel" id="custMobile" placeholder="Mobile Number" class="bg-slate-900 border border-slate-700 rounded p-2 text-xs text-white">
-            </div>
-            <input type="text" id="machineSerial" placeholder="Machine Serial No. / Barcode" class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-xs text-white">
-        </div>
-
-        <!-- TDS Water Log -->
-        <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 shadow-sm space-y-3">
-            <h2 class="text-xs font-bold text-emerald-400 uppercase tracking-wider"><i class="fa-solid fa-droplet mr-1"></i>Water TDS Quality Log</h2>
-            <div class="grid grid-cols-2 gap-3">
-                <div>
-                    <label class="text-[10px] text-slate-400">Inflow TDS (Raw)</label>
-                    <input type="number" id="tdsIn" placeholder="e.g. 356" class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-xs text-white mt-1">
-                </div>
-                <div>
-                    <label class="text-[10px] text-slate-400">Outflow TDS (Purified)</label>
-                    <input type="number" id="tdsOut" placeholder="e.g. 28" class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-xs text-white mt-1">
-                </div>
-            </div>
-        </div>
-
-    </main>
-
-    <!-- Bottom Checkout Bar -->
-    <div class="fixed bottom-0 left-0 w-full bg-slate-900 border-t border-slate-700 p-3 shadow-lg">
-        <div class="max-w-3xl mx-auto flex justify-between items-center">
+    <div class="max-w-6xl mx-auto space-y-6">
+        <!-- Top Bar -->
+        <div class="flex justify-between items-center bg-slate-800 p-4 rounded-xl border border-slate-700">
             <div>
-                <p class="text-[10px] text-slate-400">Grand Total (Incl. GST)</p>
-                <p class="text-base font-bold text-emerald-400">₹2,150</p>
+                <h1 class="text-lg font-bold text-emerald-400">GURUKIRPA / ADMIN PANEL</h1>
+                <p class="text-xs text-slate-400">Live Cloud Sync Enabled</p>
             </div>
-            <div class="flex gap-2">
-                <button onclick="saveInvoice()" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold px-4 py-2 rounded-lg text-xs transition">
-                    Save & Sync to Cloud
-                </button>
+            <a href="../index.html" class="bg-red-500/20 text-red-400 px-3 py-1.5 rounded-lg text-xs font-semibold border border-red-500/30">Logout</a>
+        </div>
+
+        <!-- Live Invoices Section -->
+        <div class="bg-slate-800 p-4 md:p-6 rounded-xl border border-slate-700 space-y-4">
+            <h2 class="text-sm font-bold text-emerald-400 uppercase tracking-wider"><i class="fa-solid fa-receipt mr-2"></i>Live Technician Invoices (Real-Time)</h2>
+            
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs">
+                    <thead class="bg-slate-900 text-slate-400 border-b border-slate-700">
+                        <tr>
+                            <th class="p-3">Customer Name</th>
+                            <th class="p-3">Mobile</th>
+                            <th class="p-3">Serial No.</th>
+                            <th class="p-3">Total Amount</th>
+                            <th class="p-3">TDS (In/Out)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="liveInvoiceTable" class="divide-y divide-slate-700/50">
+                        <tr>
+                            <td colspan="5" class="p-4 text-center text-slate-400">Loading live data from Firebase...</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
@@ -65,7 +47,7 @@
     <!-- Firebase Script -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
-        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
+        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBgIcBs725bsg2tdaEVK0NvUwe0axXR_Dc",
@@ -80,40 +62,33 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        window.saveInvoice = async function() {
-            let name = document.getElementById('custName').value;
-            let mobile = document.getElementById('custMobile').value;
-            let serial = document.getElementById('machineSerial').value;
-            let tdsIn = document.getElementById('tdsIn').value;
-            let tdsOut = document.getElementById('tdsOut').value;
-
-            if(!name || !mobile) {
-                alert("Please enter customer name and mobile number!");
-                return;
-            }
-
+        async function loadInvoices() {
+            let tbody = document.getElementById('liveInvoiceTable');
             try {
-                await addDoc(collection(db, "invoices"), {
-                    customerName: name,
-                    customerMobile: mobile,
-                    machineSerial: serial,
-                    tdsIn: tdsIn,
-                    tdsOut: tdsOut,
-                    grandTotal: 2150,
-                    createdAt: new Date().toISOString()
+                const querySnapshot = await getDocs(collection(db, "invoices"));
+                tbody.innerHTML = "";
+                if(querySnapshot.empty) {
+                    tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-400">No invoices generated yet.</td></tr>`;
+                    return;
+                }
+                querySnapshot.forEach((doc) => {
+                    let inv = doc.data();
+                    tbody.innerHTML += `
+                        <tr>
+                            <td class="p-3 font-medium">${inv.customerName || 'N/A'}</td>
+                            <td class="p-3 text-slate-400">${inv.customerMobile || 'N/A'}</td>
+                            <td class="p-3">${inv.machineSerial || 'N/A'}</td>
+                            <td class="p-3 text-emerald-400 font-bold">₹${inv.grandTotal || '2150'}</td>
+                            <td class="p-3">${inv.tdsIn || 0} / ${inv.tdsOut || 0} PPM</td>
+                        </tr>
+                    `;
                 });
-                alert("Invoice Saved Successfully to Cloud Database!");
-                document.getElementById('custName').value = '';
-                document.getElementById('custMobile').value = '';
-                document.getElementById('machineSerial').value = '';
-                document.getElementById('tdsIn').value = '';
-                document.getElementById('tdsOut').value = '';
             } catch (e) {
-                console.error("Error adding document: ", e);
-                alert("Error saving invoice. Check console.");
+                console.error("Error loading invoices: ", e);
             }
         }
-    </script>
 
+        loadInvoices();
+    </script>
 </body>
 </html>
