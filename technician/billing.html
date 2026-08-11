@@ -66,7 +66,7 @@
                 <p class="text-[10px] text-slate-400">Grand Total (Incl. GST)</p>
                 <p id="displayTotal" class="text-base font-bold text-emerald-400">₹2,150</p>
             </div>
-            <button id="saveBtn" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold px-5 py-2.5 rounded-xl text-xs transition shadow-lg shadow-emerald-500/20">
+            <button id="saveBtn" type="button" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold px-5 py-2.5 rounded-xl text-xs transition shadow-lg shadow-emerald-500/20 cursor-pointer">
                 Save & Sync to Cloud
             </button>
         </div>
@@ -99,11 +99,11 @@
         });
 
         document.getElementById('saveBtn').addEventListener('click', async function() {
-            let name = document.getElementById('custName').value;
-            let mobile = document.getElementById('custMobile').value;
-            let serial = document.getElementById('machineSerial').value;
-            let tdsIn = document.getElementById('tdsIn').value;
-            let tdsOut = document.getElementById('tdsOut').value;
+            let name = document.getElementById('custName').value.trim();
+            let mobile = document.getElementById('custMobile').value.trim();
+            let serial = document.getElementById('machineSerial').value.trim();
+            let tdsIn = document.getElementById('tdsIn').value.trim();
+            let tdsOut = document.getElementById('tdsOut').value.trim();
             let finalAmount = Number(amountInput.value) || 0;
 
             if(!name || !mobile) {
@@ -112,12 +112,13 @@
             }
 
             try {
+                this.innerText = "Saving...";
                 await addDoc(collection(db, "invoices"), {
                     customerName: name,
                     customerMobile: mobile,
-                    machineSerial: serial,
-                    tdsIn: tdsIn,
-                    tdsOut: tdsOut,
+                    machineSerial: serial || 'N/A',
+                    tdsIn: tdsIn || '0',
+                    tdsOut: tdsOut || '0',
                     grandTotal: finalAmount,
                     createdAt: new Date().toISOString()
                 });
@@ -129,9 +130,11 @@
                 document.getElementById('tdsOut').value = '';
                 amountInput.value = '2150';
                 displayTotal.innerText = '₹2,150';
+                this.innerText = "Save & Sync to Cloud";
             } catch (e) {
                 console.error("Error adding document: ", e);
-                alert("Error saving invoice. Check console.");
+                alert("Error saving invoice: " + e.message);
+                this.innerText = "Save & Sync to Cloud";
             }
         });
     </script>
