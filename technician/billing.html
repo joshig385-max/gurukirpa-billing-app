@@ -55,7 +55,7 @@
                 <p class="text-base font-bold text-emerald-400">₹2,150</p>
             </div>
             <div class="flex gap-2">
-                <button onclick="saveInvoice()" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold px-4 py-2 rounded-lg text-xs transition">
+                <button id="saveBtn" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold px-4 py-2 rounded-lg text-xs transition">
                     Save & Sync to Cloud
                 </button>
             </div>
@@ -80,7 +80,7 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        window.saveInvoice = async function() {
+        document.getElementById('saveBtn').addEventListener('click', async function() {
             let name = document.getElementById('custName').value;
             let mobile = document.getElementById('custMobile').value;
             let serial = document.getElementById('machineSerial').value;
@@ -112,7 +112,7 @@
                 console.error("Error adding document: ", e);
                 alert("Error saving invoice. Check console.");
             }
-        }
+        });
     </script>
 
 </body>
