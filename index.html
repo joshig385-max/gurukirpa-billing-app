@@ -3,42 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GuruKirpa - Login Portal</title>
+    <title>GuruKirpa - Water Filter & AC Service ERP</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body class="bg-slate-900 text-slate-100 font-sans flex items-center justify-center min-h-screen">
-    <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 w-80 shadow-lg">
-        <h1 class="text-xl font-bold text-emerald-400 text-center mb-1">GURUKIRPA</h1>
-        <p class="text-xs text-slate-400 text-center mb-6">Smart Billing & Service Portal</p>
+<body class="bg-[#0b132b] text-slate-100 font-sans min-h-screen flex items-center justify-center p-4">
+
+    <div class="max-w-md w-full bg-[#1c2541] p-8 rounded-2xl border border-slate-800 shadow-xl space-y-6 text-center">
         
-        <div class="space-y-4">
-            <div>
-                <label class="text-xs text-slate-400">Select Role / User ID</label>
-                <select id="loginRole" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-sm text-white mt-1 outline-none focus:border-emerald-500">
-                    <option value="admin">Admin (Gaurav Kumar)</option>
-                    <option value="tech1">Technician (Rohit Kumar)</option>
-                    <option value="tech2">Technician (Staff 2)</option>
-                </select>
+        <!-- Logo & Branding -->
+        <div class="space-y-2">
+            <div class="bg-emerald-500/20 text-emerald-400 w-16 h-16 mx-auto rounded-2xl flex items-center justify-center text-2xl border border-emerald-500/30 shadow-inner">
+                <i class="fa-solid fa-droplet"></i>
             </div>
-            <div>
-                <label class="text-xs text-slate-400">Password / PIN</label>
-                <input type="password" id="loginPin" placeholder="Enter 4-digit PIN" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-sm text-white mt-1 outline-none focus:border-emerald-500">
-            </div>
-            <button onclick="handleLogin()" class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold py-2.5 rounded-lg text-sm transition">
-                Login to Portal
-            </button>
+            <h1 class="text-xl font-extrabold text-white">GuruKirpa</h1>
+            <p class="text-xs text-slate-400">Water Filter & AC Service Management</p>
+        </div>
+
+        <!-- Role Selection Buttons -->
+        <div class="space-y-3 pt-2">
+            <a href="admin/dashboard.html" class="w-full flex items-center justify-between bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold p-4 rounded-xl text-xs transition shadow-lg shadow-emerald-500/20">
+                <span class="flex items-center space-x-3"><i class="fa-solid fa-user-shield text-base"></i><span>Login as Admin</span></span>
+                <i class="fa-solid fa-arrow-right"></i>
+            </a>
+
+            <a href="technician/billing.html" class="w-full flex items-center justify-between bg-slate-900 hover:bg-slate-800 text-emerald-400 font-bold p-4 rounded-xl text-xs border border-slate-700 transition">
+                <span class="flex items-center space-x-3"><i class="fa-solid fa-screwdriver-wrench text-base"></i><span>Login as Technician</span></span>
+                <i class="fa-solid fa-arrow-right"></i>
+            </a>
+        </div>
+
+        <div class="pt-4 border-t border-slate-800 text-[10px] text-slate-500">
+            Cloud Connected ERP System • Version 1.0
         </div>
     </div>
 
-    <script>
-        function handleLogin() {
-            let role = document.getElementById('loginRole').value;
-            if(role === 'admin') {
-                window.location.href = 'admin/dashboard.html';
-            } else {
-                window.location.href = 'technician/billing.html';
-            }
-        }
-    </script>
 </body>
 </html>
