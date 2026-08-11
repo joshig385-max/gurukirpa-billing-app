@@ -5,11 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GuruKirpa - Admin Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body class="bg-slate-900 text-slate-100 font-sans p-6">
-    <div class="max-w-6xl mx-auto">
-        <h1 class="text-2xl font-bold text-emerald-400 mb-4">Admin Dashboard (GuruKirpa Water Filter & AC Service)</h1>
-        <div class="grid grid-cols-4 gap-4 mb-6">
+<body class="bg-slate-900 text-slate-100 font-sans min-h-screen p-4 md:p-6">
+
+    <div class="max-w-6xl mx-auto space-y-6">
+        <!-- Top Bar -->
+        <div class="flex justify-between items-center bg-slate-800 p-4 rounded-xl border border-slate-700">
+            <div>
+                <h1 class="text-lg font-bold text-emerald-400">GURUKIRPA / ADMIN PANEL</h1>
+                <p class="text-xs text-slate-400">Manage Technicians, Stock & Invoices</p>
+            </div>
+            <a href="../index.html" class="bg-red-500/20 text-red-400 px-3 py-1.5 rounded-lg text-xs font-semibold border border-red-500/30">Logout</a>
+        </div>
+
+        <!-- Stats Overview -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
                 <p class="text-xs text-slate-400">Today's Sales</p>
                 <h3 class="text-xl font-bold text-emerald-400 mt-1">₹18,540</h3>
@@ -18,8 +29,86 @@
                 <p class="text-xs text-slate-400">Pending Payments</p>
                 <h3 class="text-xl font-bold text-amber-400 mt-1">₹7,460</h3>
             </div>
+            <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
+                <p class="text-xs text-slate-400">Total Technicians</p>
+                <h3 class="text-xl font-bold text-white mt-1">2 Active</h3>
+            </div>
+            <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
+                <p class="text-xs text-slate-400">Low Stock Alerts</p>
+                <h3 class="text-xl font-bold text-red-400 mt-1">5 Items</h3>
+            </div>
         </div>
-        <p class="text-sm text-slate-400">Yahan Admin saare technicians ki list, IDs, aur unka data dekh sakega.</p>
+
+        <!-- Technician Management Section -->
+        <div class="bg-slate-800 p-4 md:p-6 rounded-xl border border-slate-700 space-y-4">
+            <div class="flex justify-between items-center">
+                <h2 class="text-sm font-bold text-emerald-400 uppercase tracking-wider"><i class="fa-solid fa-users-gear mr-2"></i>Create & Manage Technicians</h2>
+            </div>
+
+            <!-- Add Technician Form -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 bg-slate-900 p-3 rounded-lg border border-slate-700">
+                <input type="text" id="newTechName" placeholder="Technician Name" class="bg-slate-800 border border-slate-700 rounded p-2 text-xs text-white">
+                <input type="text" id="newTechPhone" placeholder="Mobile Number / ID" class="bg-slate-800 border border-slate-700 rounded p-2 text-xs text-white">
+                <button onclick="addTechnician()" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded p-2 text-xs transition">
+                    <i class="fa-solid fa-user-plus mr-1"></i> Generate Technician ID
+                </button>
+            </div>
+
+            <!-- Technicians List Table -->
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs">
+                    <thead class="bg-slate-900 text-slate-400 border-b border-slate-700">
+                        <tr>
+                            <th class="p-3">Name</th>
+                            <th class="p-3">ID / Mobile</th>
+                            <th class="p-3">Invoices Generated</th>
+                            <th class="p-3">Status</th>
+                            <th class="p-3 text-right">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="techTableBody" class="divide-y divide-slate-700/50">
+                        <tr>
+                            <td class="p-3 font-medium">Rohit Kumar</td>
+                            <td class="p-3 text-slate-400">9876543210</td>
+                            <td class="p-3">24 Invoices</td>
+                            <td class="p-3"><span class="bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded text-[10px]">Active</span></td>
+                            <td class="p-3 text-right"><button class="text-red-400 hover:text-red-300">Disable</button></td>
+                        </tr>
+                        <tr>
+                            <td class="p-3 font-medium">Staff 2 (Helper)</td>
+                            <td class="p-3 text-slate-400">9123456789</td>
+                            <td class="p-3">12 Invoices</td>
+                            <td class="p-3"><span class="bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded text-[10px]">Active</span></td>
+                            <td class="p-3 text-right"><button class="text-red-400 hover:text-red-300">Disable</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
+
+    <script>
+        function addTechnician() {
+            let name = document.getElementById('newTechName').value;
+            let phone = document.getElementById('newTechPhone').value;
+            if(name && phone) {
+                let tbody = document.getElementById('techTableBody');
+                tbody.innerHTML += `
+                    <tr>
+                        <td class="p-3 font-medium">${name}</td>
+                        <td class="p-3 text-slate-400">${phone}</td>
+                        <td class="p-3">0 Invoices</td>
+                        <td class="p-3"><span class="bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded text-[10px]">Active</span></td>
+                        <td class="p-3 text-right"><button class="text-red-400 hover:text-red-300">Disable</button></td>
+                    </tr>
+                `;
+                document.getElementById('newTechName').value = '';
+                document.getElementById('newTechPhone').value = '';
+                alert("New Technician ID Generated Successfully!");
+            } else {
+                alert("Please enter both Name and Mobile Number!");
+            }
+        }
+    </script>
 </body>
 </html>
