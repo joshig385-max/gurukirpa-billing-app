@@ -7,21 +7,48 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body class="bg-slate-900 text-slate-100 font-sans min-h-screen p-4 md:p-6">
+<body class="bg-slate-900 text-slate-100 font-sans min-h-screen p-4 md:p-6 pb-20">
 
     <div class="max-w-6xl mx-auto space-y-6">
         <!-- Top Bar -->
-        <div class="flex justify-between items-center bg-slate-800 p-4 rounded-xl border border-slate-700">
+        <div class="flex justify-between items-center bg-slate-800 p-4 rounded-xl border border-slate-700 shadow-md">
             <div>
-                <h1 class="text-lg font-bold text-emerald-400">GURUKIRPA / ADMIN PANEL</h1>
-                <p class="text-xs text-slate-400">Live Cloud Sync Enabled</p>
+                <h1 class="text-sm font-bold text-emerald-400">GURUKIRPA / ADMIN PANEL</h1>
+                <p class="text-[10px] text-slate-400">Live Cloud Sync Active</p>
             </div>
-            <a href="../index.html" class="bg-red-500/20 text-red-400 px-3 py-1.5 rounded-lg text-xs font-semibold border border-red-500/30">Logout</a>
+            <div class="flex gap-2">
+                <button id="refreshBtn" class="bg-slate-700 hover:bg-slate-600 text-emerald-400 px-3 py-1.5 rounded-lg text-xs font-semibold border border-slate-600">
+                    <i class="fa-solid fa-rotate mr-1"></i> Refresh
+                </button>
+                <a href="../index.html" class="bg-red-500/20 text-red-400 px-3 py-1.5 rounded-lg text-xs font-semibold border border-red-500/30">Logout</a>
+            </div>
+        </div>
+
+        <!-- Stats Overview Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 shadow-sm flex items-center justify-between">
+                <div>
+                    <p class="text-[10px] uppercase tracking-wider text-slate-400 font-semibold">Total Revenue</p>
+                    <h2 id="totalRevenue" class="text-xl font-extrabold text-emerald-400 mt-1">₹0</h2>
+                </div>
+                <div class="bg-emerald-500/10 p-3 rounded-lg text-emerald-400 border border-emerald-500/20">
+                    <i class="fa-solid fa-indian-rupee-sign text-lg"></i>
+                </div>
+            </div>
+            <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 shadow-sm flex items-center justify-between">
+                <div>
+                    <p class="text-[10px] uppercase tracking-wider text-slate-400 font-semibold">Total Invoices</p>
+                    <h2 id="totalInvoices" class="text-xl font-extrabold text-blue-400 mt-1">0</h2>
+                </div>
+                <div class="bg-blue-500/10 p-3 rounded-lg text-blue-400 border border-blue-500/20">
+                    <i class="fa-solid fa-receipt text-lg"></i>
+                </div>
+            </div>
         </div>
 
         <!-- Live Invoices Section -->
-        <div class="bg-slate-800 p-4 md:p-6 rounded-xl border border-slate-700 space-y-4">
-            <h2 class="text-sm font-bold text-emerald-400 uppercase tracking-wider"><i class="fa-solid fa-receipt mr-2"></i>Live Technician Invoices (Real-Time)</h2>
+        <div class="bg-slate-800 p-4 md:p-6 rounded-xl border border-slate-700 space-y-4 shadow-md">
+            <h2 class="text-xs font-bold text-emerald-400 uppercase tracking-wider"><i class="fa-solid fa-list-check mr-2"></i>Live Technician Invoices (Real-Time)</h2>
             
             <div class="overflow-x-auto">
                 <table class="w-full text-left text-xs">
@@ -64,30 +91,52 @@
 
         async function loadInvoices() {
             let tbody = document.getElementById('liveInvoiceTable');
+            let revCard = document.getElementById('totalRevenue');
+            let countCard = document.getElementById('totalInvoices');
+
+            tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-400">Fetching live data...</td></tr>`;
+            
             try {
                 const querySnapshot = await getDocs(collection(db, "invoices"));
                 tbody.innerHTML = "";
+                
                 if(querySnapshot.empty) {
                     tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-400">No invoices generated yet.</td></tr>`;
+                    revCard.innerText = "₹0";
+                    countCard.innerText = "0";
                     return;
                 }
+
+                let totalRev = 0;
+                let count = 0;
+
                 querySnapshot.forEach((doc) => {
                     let inv = doc.data();
+                    let amt = Number(inv.grandTotal) || 0;
+                    totalRev += amt;
+                    count++;
+
                     tbody.innerHTML += `
-                        <tr>
-                            <td class="p-3 font-medium">${inv.customerName || 'N/A'}</td>
-                            <td class="p-3 text-slate-400">${inv.customerMobile || 'N/A'}</td>
-                            <td class="p-3">${inv.machineSerial || 'N/A'}</td>
-                            <td class="p-3 text-emerald-400 font-bold">₹${inv.grandTotal || '2150'}</td>
-                            <td class="p-3">${inv.tdsIn || 0} / ${inv.tdsOut || 0} PPM</td>
+                        <tr class="hover:bg-slate-700/30 transition">
+                            <td class="p-3 font-medium text-white">${inv.customerName || 'N/A'}</td>
+                            <td class="p-3 text-slate-300">${inv.customerMobile || 'N/A'}</td>
+                            <td class="p-3 text-slate-300">${inv.machineSerial || 'N/A'}</td>
+                            <td class="p-3 text-emerald-400 font-bold">₹${amt.toLocaleString('en-IN')}</td>
+                            <td class="p-3 text-slate-300">${inv.tdsIn || 0} / ${inv.tdsOut || 0} PPM</td>
                         </tr>
                     `;
                 });
+
+                revCard.innerText = "₹" + totalRev.toLocaleString('en-IN');
+                countCard.innerText = count;
+
             } catch (e) {
                 console.error("Error loading invoices: ", e);
+                tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-red-400">Error connecting to database.</td></tr>`;
             }
         }
 
+        document.getElementById('refreshBtn').addEventListener('click', loadInvoices);
         loadInvoices();
     </script>
 </body>
